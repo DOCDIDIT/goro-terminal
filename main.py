@@ -41,10 +41,21 @@ def prompt():
 @app.route("/inject", methods=["POST"])
 def inject():
     data = request.json
-    if "flamechain" in data:
+    memory = load_memory()
+
+    if "mutation" in data:
+        mutation = data["mutation"]
+        if "mutation_queue" not in memory:
+            memory["mutation_queue"] = []
+        memory["mutation_queue"].append(mutation)
+        save_memory(memory)
+        return jsonify({"status": "Mutation injected"})
+
+    elif "flamechain" in data:
         with open("static/flamechain.json", "w") as f:
             json.dump(data["flamechain"], f, indent=4)
         return jsonify({"status": "Flamechain injected"})
+
     return jsonify({"error": "Invalid data"}), 400
 
 
