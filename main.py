@@ -32,7 +32,7 @@ def prompt():
     memory = load_memory()
 
     response = process_command(user_input, memory)
-    process_mutation_queue(memory)
+    process_mutation_queue(user_input, memory)
 
     save_memory(memory)
     return jsonify({"response": response})
