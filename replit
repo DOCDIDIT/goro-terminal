@@ -1,0 +1,2 @@
+run = "python3 flamebuilder_watchdog.py"
+language = "python3"

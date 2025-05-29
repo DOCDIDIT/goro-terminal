@@ -1,0 +1,1 @@
+def register_tool(app):\n    import requests\n    @app.route('/tools/trigger_sync', methods=['GET'])\n    def trigger_sync():\n        try:\n            r = requests.get('http://localhost:3000/tools/sync_yggdrasil')\n            return {'status': 'Triggered internally', 'response': r.text}\n        except Exception as e:\n            return {'error': str(e)}

@@ -1,0 +1,5 @@
+{
+  "mutation_name": "phase_22_self_fork",
+  "target_file": "main.py",
+  "patch": "# Mutation: self fork enabled"
+}

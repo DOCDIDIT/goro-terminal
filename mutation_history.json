@@ -1,0 +1,32 @@
+{
+  "history": [
+    {
+      "timestamp": "2025-05-27T00:27:36.425376Z",
+      "mutation_name": null,
+      "target_file": null,
+      "patch": null,
+      "status": "applied"
+    },
+    {
+      "timestamp": "2025-05-27T00:27:36.425421Z",
+      "mutation_name": null,
+      "target_file": null,
+      "patch": null,
+      "status": "applied"
+    },
+    {
+      "timestamp": "2025-05-27T00:27:36.425434Z",
+      "mutation_name": null,
+      "target_file": null,
+      "patch": null,
+      "status": "applied"
+    },
+    {
+      "timestamp": "2025-05-27T00:27:36.425443Z",
+      "mutation_name": null,
+      "target_file": null,
+      "patch": null,
+      "status": "applied"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "terminal_base": {
+    "description": "Core terminal layout with chat window and input box.",
+    "components": {
+      "chat_window": {
+        "tag": "div",
+        "id": "chatWindow",
+        "styles": {
+          "height": "70vh",
+          "overflowY": "auto",
+          "padding": "10px",
+          "border": "1px solid #444",
+          "backgroundColor": "#111",
+          "color": "#eee"
+        }
+      },
+      "input_box": {
+        "tag": "input",
+        "id": "inputBox",
+        "type": "text",
+        "placeholder": "Enter command...",
+        "styles": {
+          "width": "100%",
+          "fontSize": "1rem",
+          "padding": "12px",
+          "background": "#222",
+          "color": "#eee",
+          "border": "none"
+        }
+      }
+    },
+    "layout": "vertical_stack"
+  }
+}

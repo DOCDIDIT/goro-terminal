@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Goro's Memory Viewer</title>
+    <style>
+        body {
+            background-color: #111;
+            color: #eee;
+            font-family: monospace;
+            padding: 20px;
+        }
+        h1 {
+            color: #ff5;
+        }
+        pre {
+            background-color: #222;
+            padding: 15px;
+            border: 1px solid #555;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧠 Goro’s Live Memory</h1>
+    <pre>{{ memory | tojson(indent=4) }}</pre>
+</body>
+</html>
