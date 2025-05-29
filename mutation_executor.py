@@ -1,6 +1,6 @@
 import os
 import json
-from memory import load_memory, save_memory
+from memory_handler import load_memory, save_memory
 
 
 def process_mutation_queue(user_input=None, memory=None):
