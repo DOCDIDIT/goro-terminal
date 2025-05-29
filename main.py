@@ -7,7 +7,7 @@ from mutation_executor import process_mutation_queue
 app = Flask(__name__)
 
 # Load memory at startup
-with open("static/memory.json", "r") as f:
+with open("memory.json", "r") as f:
     memory = json.load(f)
 
 
