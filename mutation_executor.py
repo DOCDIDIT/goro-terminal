@@ -37,7 +37,7 @@ def process_mutation_queue(user_input, memory):
                         "last_triggered_response"] = f"Memory key '{key}' set."
 
             elif mutation_type == "directive":
-            directive = mutation.get("directive")
+                directive = mutation.get("directive")
             if directive:
                 if "evolution_directives" not in memory:
                     memory["evolution_directives"] = []
