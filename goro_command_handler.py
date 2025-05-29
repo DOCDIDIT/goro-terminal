@@ -5,6 +5,10 @@ from mutation_executor import create_mutation_from_prompt
 def process_command(user_input, memory):
     import json
 
+    # Check for stored triggered mutation response first
+    if "last_triggered_response" in memory:
+        return memory.pop("last_triggered_response")
+
     if "show.atlas" in user_input:
         return json.dumps(memory.get("flame_atlas", {}), indent=2)
 
@@ -20,8 +24,5 @@ def process_command(user_input, memory):
 
     if "inject.ui" in user_input:
         return "✨ UI injection requested. Feature not yet implemented."
-
-    if "last_triggered_response" in memory:
-        return memory.pop("last_triggered_response")
 
     return f"Goro heard: {user_input}"
