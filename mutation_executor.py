@@ -35,6 +35,6 @@ def create_mutation_from_prompt(user_input, memory):
     timestamp = datetime.datetime.utcnow().isoformat() + "Z"
     return {
         "mutation": f"auto_{timestamp}",
-        "trigger": prompt.strip().split()[0],
+        "trigger": user_input.strip().split()[0],
         "response": f"Auto response generated for: {prompt}"
     }
