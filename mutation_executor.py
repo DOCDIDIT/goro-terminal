@@ -16,8 +16,9 @@ def save_memory(memory):
         json.dump(memory, f, indent=2)
 
 
-def process_mutation_queue():
-    memory = load_memory()
+def process_mutation_queue(user_input=None, memory=None):
+    if memory is None:
+        memory = load_memory()
     if not os.path.exists("queue"):
         os.makedirs("queue")
 
