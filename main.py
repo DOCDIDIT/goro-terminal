@@ -5,7 +5,7 @@ from goro_command_handler import process_command
 from mutation_executor import process_mutation_queue
 from firebase_sync import upload_memory, download_memory
 from datetime import datetime
-
+#Test
 app = Flask(__name__)
 
 # Load memory
@@ -62,11 +62,10 @@ def prompt():
 
 
 # Phase 100: Run mutation queue processor
-process_mutation_queue(memory)
+process_mutation_queue(user_input, memory)
 
 if __name__ == "__main__":
     app.run(debug=True)
-
 
 
 def generate_autonomous_mutation(user_input):
