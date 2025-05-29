@@ -49,8 +49,8 @@ def process_mutation_queue(user_input, memory):
                 if isinstance(entry, dict):
                     if "flame_atlas" not in memory:
                         memory["flame_atlas"] = {}
-                    memory["flame_atlas"].update(entry)
-                    memory["last_triggered_response"] = f"Flame Atlas updated."
+                memory["flame_atlas"].update(entry)
+                memory["last_triggered_response"] = f"Flame Atlas updated."
 
             elif mutation_type == "command":
                 alias = mutation.get("alias", "").strip()
