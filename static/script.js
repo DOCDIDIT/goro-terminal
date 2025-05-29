@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const prompt = inputBox.value.trim();
     if (!prompt) return;
     appendMessage("user", prompt);
-    fetch("/ask", {
+    fetch("/command", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: prompt })

@@ -16,7 +16,7 @@ def home():
     return render_template("goro_terminal.html")
 
 
-@app.route("/prompt", methods=["POST"])
+@app.route("/command", methods=["POST"])
 def prompt():
     user_input = request.json["user_input"]
     response = handle_command(user_input, memory)
@@ -25,7 +25,7 @@ def prompt():
     process_mutation_queue(user_input, memory)
 
     # Save updated memory
-    with open("static/memory.json", "w") as f:
+    with open("memory.json", "w") as f:
         json.dump(memory, f, indent=4)
 
     return jsonify({"response": response})
