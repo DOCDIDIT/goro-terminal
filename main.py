@@ -18,7 +18,7 @@ def home():
 
 @app.route("/command", methods=["POST"])
 def prompt():
-    user_input = request.json["prompt"]
+    user_input = request.json["user_input"]
     memory = load_memory()
 
     response = process_command(user_input, memory)
