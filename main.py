@@ -3,7 +3,7 @@ import json
 import os
 from goro_command_handler import process_command
 from mutation_executor import process_mutation_queue
-from memory_handler import load_memory, save_memory
+from memory import load_memory, save_memory
 
 app = Flask(__name__)
 
