@@ -22,7 +22,7 @@ def prompt():
     response = process_command(user_input, memory)
 
     # Now safe to call the mutation processor here inside request context
-    process_mutation_queue(user_input, memory)
+    process_mutation_queue(memory)
 
     # Save updated memory
     with open("memory.json", "w") as f:
