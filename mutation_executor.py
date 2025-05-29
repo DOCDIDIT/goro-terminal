@@ -29,3 +29,13 @@ def process_mutation_queue(user_input, memory):
             # 🧠 Type: Memory
             elif mutation_type == "memory":
                 key = mutation
+
+
+def create_mutation_from_prompt(user_input, memory):
+    timestamp = datetime.datetime.utcnow().isoformat() + "Z"
+    return {
+        "mutation": f"auto_{timestamp}",
+        "trigger": user_input.strip().split()[0],
+        "type": "response",
+        "response": f"Auto response generated for: {user_input}"
+    }
