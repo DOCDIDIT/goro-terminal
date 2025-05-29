@@ -16,4 +16,7 @@ def process_command(user_input, memory):
     if "inject.ui" in user_input:
         return "🧩 UI injection requested. Feature not yet implemented."
 
+    if memory.get("last_triggered_response"):
+        return memory.pop("last_triggered_response")
+
     return f"Goro heard: {user_input}"
