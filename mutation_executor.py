@@ -1,34 +1,21 @@
 import datetime
 
 
-def process_mutation_queue(user_input, mutation_queue):
-    responses = []
+def process_mutation_queue(user_input, memory):
+    if "mutation_queue" not in memory:
+        memory["mutation_queue"] = []
+
+    queue = memory["mutation_queue"]
     cleaned_queue = []
 
-    for entry in mutation_queue:
-        if not isinstance(entry, dict):
-            continue
-
-        mutation = entry.get("mutation", "unknown")
-        trigger = entry.get("trigger")
-        response = entry.get("response")
-
-        if not trigger or response is None:
-            print(
-                f"🔥 Suggest.mutation triggered. Mutation: {mutation}, Response: {response}"
-            )
-            cleaned_queue.append(entry)
-            continue
-
-        if trigger.lower() in user_input.lower():
-            responses.append(response)
-            print(
-                f"✅ Trigger matched for '{mutation}' -> Response: {response}")
+    for mutation in queue:
+        if "trigger" in mutation and mutation["trigger"] in user_input:
+            # you can do something here like apply mutation logic
+            memory["last_triggered"] = mutation["trigger"]
         else:
-            cleaned_queue.append(entry)
+            cleaned_queue.append(mutation)
 
     memory["mutation_queue"] = cleaned_queue
-    return responses, memory
 
 
 def create_mutation_from_prompt(user_input, memory):
