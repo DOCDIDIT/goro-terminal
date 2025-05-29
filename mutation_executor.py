@@ -60,3 +60,14 @@ def process_mutation_queue():
                 os.remove(path)
             except Exception as e:
                 print(f"Error processing {filename}: {e}")
+
+
+def create_mutation_from_prompt(user_input, memory):
+    import datetime
+    timestamp = datetime.datetime.utcnow().isoformat() + "Z"
+    return {
+        "mutation": f"auto_{timestamp}",
+        "trigger": user_input.strip().split()[0],
+        "type": "response",
+        "response": f"Auto response generated for: {user_input}"
+    }
