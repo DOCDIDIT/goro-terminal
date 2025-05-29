@@ -27,7 +27,7 @@ def process_mutation_queue(mutation_queue, user_input, memory):
     return responses, memory
 
 
-def create_mutation_from_prompt(prompt):
+def create_mutation_from_prompt(user input, memory):
     timestamp = datetime.datetime.utcnow().isoformat() + "Z"
     return {
         "mutation": f"auto_{timestamp}",
