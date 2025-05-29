@@ -1,7 +1,7 @@
 import datetime
 
 
-def process_mutation_queue(user_input, memory):
+def process_mutation_queue(user_input, memory, mutation_queue):
     responses = []
     cleaned_queue = []
 
