@@ -1,19 +1,6 @@
-import json
 import os
-
-MEMORY_PATH = "memory.json"
-
-
-def load_memory():
-    if not os.path.exists(MEMORY_PATH):
-        return {}
-    with open(MEMORY_PATH, "r") as f:
-        return json.load(f)
-
-
-def save_memory(memory):
-    with open(MEMORY_PATH, "w") as f:
-        json.dump(memory, f, indent=2)
+import json
+from memory import load_memory, save_memory
 
 
 def process_mutation_queue(user_input=None, memory=None):
@@ -33,20 +20,21 @@ def process_mutation_queue(user_input=None, memory=None):
 
                 trigger = mutation.get("trigger")
                 mutation_type = mutation.get("type")
+                directive = mutation.get("directive")
+                response = mutation.get("response")
 
-                if mutation_type == "directive":
-                    directive = mutation.get("directive")
-                    if directive:
-                        if "evolution_directives" not in memory:
-                            memory["evolution_directives"] = []
-                        memory["evolution_directives"].append(directive)
-                        memory["last_triggered_response"] = directive
+                # DIRECTIVE TYPE HANDLING
+                if mutation_type == "directive" and directive:
+                    if "evolution_directives" not in memory:
+                        memory["evolution_directives"] = []
+                    memory["evolution_directives"].append(directive)
+                    memory["last_triggered_response"] = directive
 
-                elif mutation_type == "response":
-                    memory["last_triggered_response"] = mutation.get(
-                        "response", "")
+                # RESPONSE TYPE
+                elif mutation_type == "response" and response:
+                    memory["last_triggered_response"] = response
 
-                # Always track last triggered
+                # Log and save memory
                 memory["last_triggered"] = trigger
                 if "mutation_log" not in memory:
                     memory["mutation_log"] = []
@@ -56,7 +44,7 @@ def process_mutation_queue(user_input=None, memory=None):
                 os.remove(path)
 
     except Exception as e:
-        print(f"[MUTATION ERROR] {e}")
+        print(f"[MUTATION_EXECUTOR ERROR] {e}")
 
 
 def create_mutation_from_prompt(user_input, memory):
