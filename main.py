@@ -62,6 +62,7 @@ def prompt():
 
 
 # Phase 100: Run mutation queue processor
+user_input = request.json.get("user_input", "")
 process_mutation_queue(user_input, memory)
 
 if __name__ == "__main__":
