@@ -42,7 +42,7 @@ def process_command(user_input, memory):
             start = user_input.index("{")
             json_str = user_input[start:]
             mutation = json.loads(json_str)
-            if "trigger" in mutation and "response" in mutation:
+            if "trigger" in mutation:
                 if "mutation_queue" not in memory:
                     memory["mutation_queue"] = []
                 memory["mutation_queue"].append(mutation)
