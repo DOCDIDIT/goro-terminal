@@ -10,11 +10,11 @@ def process_mutation_queue(user_input, memory):
     matched = False
 
     for mutation in queue:
-        if "trigger" in mutation and mutation[
-                "trigger"] in user_input and not matched:
-            memory["last_triggered"] = mutation["trigger"]
+        trigger = mutation.get("trigger", "").strip().lower()
+        if trigger and trigger in user_input.lower() and not matched:
+            memory["last_triggered"] = trigger
             memory["last_triggered_response"] = mutation.get("response", "")
-            matched = True  # only trigger the first match per prompt
+            matched = True
         else:
             cleaned_queue.append(mutation)
 
