@@ -19,7 +19,7 @@ def home():
 @app.route("/command", methods=["POST"])
 def prompt():
     user_input = request.json["user_input"]
-    response = handle_command(user_input, memory)
+    response = process_command(user_input, memory)
 
     # Now safe to call the mutation processor here inside request context
     process_mutation_queue(user_input, memory)

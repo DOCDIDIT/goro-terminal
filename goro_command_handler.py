@@ -2,7 +2,7 @@ import json
 from mutation_executor import create_mutation_from_prompt
 
 
-def process_command(prompt, memory):
+def process_command(user_prompt, memory):
     if "show.atlas" in prompt:
         return json.dumps(memory.get("flame_atlas", {}), indent=2)
 
