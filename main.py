@@ -3,13 +3,22 @@ import json
 import os
 from goro_command_handler import process_command
 from mutation_executor import process_mutation_queue
-from memory import load_memory, save_memory
 
 app = Flask(__name__)
 
-# Load memory at startup
-with open("memory.json", "r") as f:
-    memory = json.load(f)
+MEMORY_PATH = "memory.json"
+
+
+def load_memory():
+    if not os.path.exists(MEMORY_PATH):
+        return {}
+    with open(MEMORY_PATH, "r") as f:
+        return json.load(f)
+
+
+def save_memory(memory):
+    with open(MEMORY_PATH, "w") as f:
+        json.dump(memory, f, indent=2)
 
 
 @app.route("/")
@@ -23,7 +32,7 @@ def prompt():
     memory = load_memory()
 
     response = process_command(user_input, memory)
-    process_mutation_queue(memory)  # this one doesn’t return anything
+    process_mutation_queue(memory)
 
     save_memory(memory)
     return jsonify({"response": response})
