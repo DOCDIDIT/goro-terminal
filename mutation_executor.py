@@ -36,5 +36,5 @@ def create_mutation_from_prompt(user_input, memory):
     return {
         "mutation": f"auto_{timestamp}",
         "trigger": user_input.strip().split()[0],
-        "response": f"Auto response generated for: {prompt}"
+        "response": f"Auto response generated for: {user_input}"
     }
