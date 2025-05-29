@@ -17,50 +17,31 @@ def save_memory(memory):
 
 
 def process_mutation_queue(user_input=None, memory=None):
-    if memory is None:
-        memory = load_memory()
-    if not os.path.exists("queue"):
-        os.makedirs("queue")
-
-    for filename in os.listdir("queue"):
-        if filename.endswith(".json"):
-            path = os.path.join("queue", filename)
-            try:
-                with open(path, "r") as f:
-                    mutation = json.load(f)
-
-                trigger = mutation.get("trigger")
+    try:
+        if memory is None:
+            memory = load_memory()
+        if not os.path.exists("mutations"):
+            return
+        for filename in os.listdir("mutations"):
+            if filename.endswith(".json"):
+                filepath = os.path.join("mutations", filename)
+                with open(filepath, "r") as file:
+                    mutation = json.load(file)
                 mutation_type = mutation.get("type")
-
-                if mutation_type == "summary":
-                    new_summary = mutation.get("summary")
-                    if new_summary:
-                        memory["flame_summary"] = new_summary
-                        memory[
-                            "last_triggered_response"] = "Flame summary updated."
-
-                elif mutation_type == "directive":
+                if mutation_type == "directive":
                     directive = mutation.get("directive")
                     if directive:
                         if "evolution_directives" not in memory:
                             memory["evolution_directives"] = []
                         memory["evolution_directives"].append(directive)
                         memory["last_triggered_response"] = "Directive added."
-
                 elif mutation_type == "response":
-                    response = mutation.get("response")
-                    if response:
-                        memory["last_triggered_response"] = response
-
-                # Record trigger history
-                if "trigger_history" not in memory:
-                    memory["trigger_history"] = []
-                memory["trigger_history"].append(trigger)
-
+                    memory["last_triggered_response"] = mutation.get(
+                        "response", "")
                 save_memory(memory)
-                os.remove(path)
-            except Exception as e:
-                print(f"Error processing {filename}: {e}")
+                os.remove(filepath)
+    except Exception as e:
+        print(f"[ERROR] Mutation Executor failed: {e}")
 
 
 def create_mutation_from_prompt(user_input, memory):
