@@ -18,16 +18,13 @@ def home():
 
 @app.route("/command", methods=["POST"])
 def prompt():
-    user_input = request.json["user_input"]
+    user_input = request.json["prompt"]
+    memory = load_memory()
+
     response = process_command(user_input, memory)
+    process_mutation_queue(memory)  # this one doesn’t return anything
 
-    # Now safe to call the mutation processor here inside request context
-    process_mutation_queue(memory)
-
-    # Save updated memory
-    with open("memory.json", "w") as f:
-        json.dump(memory, f, indent=4)
-
+    save_memory(memory)
     return jsonify({"response": response})
 
 
