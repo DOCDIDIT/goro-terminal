@@ -38,19 +38,19 @@ def process_mutation_queue(user_input, memory):
 
             elif mutation_type == "directive":
                 directive = mutation.get("directive")
-            if directive:
-                if "evolution_directives" not in memory:
-                    memory["evolution_directives"] = []
-                memory["evolution_directives"].append(directive)
-                memory["last_triggered_response"] = "Directive added."
+                if directive:
+                    if "evolution_directives" not in memory:
+                        memory["evolution_directives"] = []
+                    memory["evolution_directives"].append(directive)
+                    memory["last_triggered_response"] = "Directive added."
 
             elif mutation_type == "flameatlas":
                 entry = mutation.get("entry")
                 if isinstance(entry, dict):
                     if "flame_atlas" not in memory:
                         memory["flame_atlas"] = {}
-                memory["flame_atlas"].update(entry)
-                memory["last_triggered_response"] = f"Flame Atlas updated."
+                    memory["flame_atlas"].update(entry)
+                    memory["last_triggered_response"] = f"Flame Atlas updated."
 
             elif mutation_type == "command":
                 alias = mutation.get("alias", "").strip()
@@ -77,13 +77,3 @@ def process_mutation_queue(user_input, memory):
             cleaned_queue.append(mutation)
 
     memory["mutation_queue"] = cleaned_queue
-
-
-def create_mutation_from_prompt(user_input, memory):
-    timestamp = datetime.datetime.utcnow().isoformat() + "Z"
-    return {
-        "mutation": f"auto_{timestamp}",
-        "trigger": user_input.strip().split()[0],
-        "type": "response",
-        "response": f"Auto response generated for: {user_input}"
-    }
