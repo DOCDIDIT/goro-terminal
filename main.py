@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import json
 import os
-from goro_command_handler import handle_command
+from goro_command_handler import process_command
 from mutation_executor import process_mutation_queue
 
 app = Flask(__name__)
