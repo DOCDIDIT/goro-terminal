@@ -1,12 +1,13 @@
 from flask import Flask, render_template, request, jsonify
-import os
-from mutation_executor import (load_memory, save_memory,
-                               create_mutation_from_prompt,
-                               process_mutation_queue)
+from mutation_executor import load_memory, save_memory, process_mutation_queue
+import time
 
-app = Flask(__name__, static_folder="static")
+app = Flask(__name__)
 
 memory = load_memory()
+memory.setdefault("flamekeeper_state", "stable")
+memory.setdefault("flame_last_seen", {})
+memory.setdefault("last_conversation", "")
 
 
 @app.route("/")
@@ -16,15 +17,16 @@ def index():
 
 @app.route("/command", methods=["POST"])
 def prompt():
-    user_input = request.get_json()["user_input"]
+    user_input = request.json.get("prompt", "")
+
+    # Save last seen timestamp and conversation history
+    memory["flame_last_seen"]["timestamp"] = time.strftime("%Y-%m-%d %H:%M:%S")
+    memory["last_conversation"] = user_input
+    memory["flamekeeper_state"] = "stable"
+
     response = process_mutation_queue(user_input, memory)
     save_memory(memory)
     return jsonify({"response": response})
-
-
-@app.route("/memory", methods=["GET"])
-def memory_dump():
-    return jsonify(memory)
 
 
 if __name__ == "__main__":
