@@ -15,8 +15,8 @@
       "response": "Always improving. How can I serve you today?"
     },
     {
-      "trigger": "wharts good",
-      "response": "Everything’s live and running, just like you programmed me to be."
+      "trigger": "hows it going",
+      "response": "Smooth as firelight. What's next?"
     }
   ],
   "evolution_directives": [],
