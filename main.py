@@ -59,7 +59,7 @@ def prompt():
         }
 
         # Process the command
-        response = handle_command(user_input, memory)
+        response = process_mutation_queue(user_input, memory)
         save_memory()
 
         return jsonify({"response": response})
