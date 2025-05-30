@@ -1,1 +1,6 @@
-[]
+"mutation_queue": [
+  {
+    "trigger": "hey",
+    "response": "Hey there, Flamekeeper."
+  }
+],
