@@ -16,7 +16,7 @@ def load_memory():
         return json.load(f)
 
 
-def save_memory(memory):
+def save_memory():
     with open(MEMORY_PATH, "w") as f:
         json.dump(memory, f, indent=2)
 
@@ -29,7 +29,7 @@ def home():
 @app.route("/command", methods=["POST"])
 def prompt():
     user_input = request.json["user_input"]
-    memory = load_memory(memory)
+    memory = load_memory()
     response = process_mutation_queue(user_input, memory)
     save_memory(memory)
     return jsonify({"response": response})
@@ -38,7 +38,7 @@ def prompt():
 @app.route("/inject", methods=["POST"])
 def inject():
     data = request.json
-    memory = load_memory(memory)
+    memory = load_memory()
 
     if "mutation" in data:
         mutation = data["mutation"]
