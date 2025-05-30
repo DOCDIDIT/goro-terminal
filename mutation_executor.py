@@ -75,19 +75,12 @@ def process_mutation_queue(user_input, memory):
             save_memory(memory)
             return role_response
 
-    if mutation_type == "directive" and directive:
-        memory["evolution_directives"].append(directive)
-        memory["last_triggered_response"] = directive
-        save_memory(memory)
-        return directive
-
     response = triggered.get("response")
     if not response:
         if mutation_type == "directive":
             response = f"Directive '{triggered.get('directive', 'unknown')}' received."
         else:
             response = f"Goro heard: {user_input}"
-
-        memory["last_triggered_response"] = response
-        save_memory(memory)
-        return response
+    memory["last_triggered_response"] = response
+    save_memory(memory)
+    return response
