@@ -26,7 +26,7 @@ def create_mutation_from_prompt(user_input, memory):
 
 
 def process_mutation_queue(user_input, memory):
-    memory = load_memory(memory)
+    memory = load_memory()
     queue = memory.get("mutation_queue", [])
     for mutation in queue:
         mutation_type = mutation.get("type", "basic")
