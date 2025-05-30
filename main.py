@@ -28,12 +28,9 @@ def home():
 
 @app.route("/command", methods=["POST"])
 def prompt():
-    user_input = request.json["user_input"]
+    user_input = request.json["prompt"]
     memory = load_memory()
-
-    response = process_command(user_input, memory)
-    process_mutation_queue(user_input, memory)
-
+    response = process_mutation_queue(user_input, memory)
     save_memory(memory)
     return jsonify({"response": response})
 
@@ -55,8 +52,10 @@ def inject():
         with open("static/flamechain.json", "w") as f:
             json.dump(data["flamechain"], f, indent=4)
         return jsonify({"status": "Flamechain injected"})
-
-    return jsonify({"error": "Invalid data"}), 400
+    try:
+        mutation = json.loads(user_input)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON input"}), 400
 
 
 if __name__ == "__main__":
