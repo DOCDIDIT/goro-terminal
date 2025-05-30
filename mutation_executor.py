@@ -1,62 +1,72 @@
 import json
 import os
-from datetime import datetime
 
-MEMORY_PATH = "memory.json"
+MEMORY_FILE = "memory.json"
 
 
 def load_memory():
-    if not os.path.exists(MEMORY_PATH):
-        return {}
-    with open(MEMORY_PATH, "r") as f:
-        return json.load(f)
+    if os.path.exists(MEMORY_FILE):
+        with open(MEMORY_FILE, "r") as f:
+            return json.load(f)
+    return {
+        "flame_summary": "",
+        "flame_last_seen": {},
+        "mutation_queue": [],
+        "evolution_directives": [],
+        "bound_knowledge": [],
+        "flamechain_history": [],
+        "mutations": [],
+        "flame_atlas": {},
+        "phase_verification": "",
+        "mutation_log": [],
+        "last_triggered": ""
+    }
 
 
-def save_memory():
-    with open(MEMORY_PATH, "w") as f:
+def save_memory(memory):
+    with open(MEMORY_FILE, "w") as f:
         json.dump(memory, f, indent=2)
 
 
-def create_mutation_from_prompt(user_input, memory):
+def create_mutation_from_prompt(prompt):
+    # Basic JSON parser and fallback
+    try:
+        mutation = json.loads(prompt)
+        if "trigger" in mutation and ("response" in mutation or "alias"
+                                      in mutation or "directive" in mutation):
+            return mutation
+    except Exception:
+        pass
     return {
-        "trigger": user_input.strip().lower(),
-        "response": f"Auto response generated for: {user_input.strip()}",
-        "timestamp": datetime.utcnow().isoformat()
+        "trigger": prompt.strip(),
+        "response": f"Goro heard: {prompt.strip()}"
     }
 
 
 def process_mutation_queue(user_input, memory):
-    memory = load_memory()
-    queue = memory.get("mutation_queue", [])
-    for mutation in queue:
-        mutation_type = mutation.get("type", "basic")
+    memory["last_triggered"] = user_input
+    triggered = None
 
-        if mutation_type == "memory":
-            key = mutation.get("key")
-            value = mutation.get("value")
-            if key and value:
-                memory[key] = value
-                memory["last_triggered_response"] = f"{key} set to {value}"
+    for mutation in memory["mutation_queue"]:
+        if mutation["trigger"] == user_input:
+            triggered = mutation
+            break
 
-        elif mutation_type == "command":
-            alias = mutation.get("alias")
-            if alias:
-                memory[
-                    "last_triggered_response"] = f"Command executed: {alias}"
+    if not triggered:
+        triggered = create_mutation_from_prompt(user_input)
+        memory["mutation_queue"].append(triggered)
 
-        elif mutation_type == "directive":
-            directive = mutation.get("directive")
-            if directive:
-                memory["evolution_directives"] = memory.get(
-                    "evolution_directives", [])
-                memory["evolution_directives"].append(directive)
-                memory[
-                    "last_triggered_response"] = f"Directive accepted: {directive}"
+    # Handle directive mutations
+    mutation_type = triggered.get("type")
+    if mutation_type == "directive":
+        directive = triggered.get("directive")
+        if directive:
+            memory["evolution_directives"].append(directive)
+            memory["last_triggered_response"] = directive
+            save_memory(memory)
+            return directive
 
-        else:
-            memory[
-                "last_triggered_response"] = f"Unhandled mutation type: {mutation_type}"
-
-    memory["mutation_log"] = memory.get("mutation_log", []) + queue
-    memory["mutation_queue"] = []
-    save_memory()
+    response = triggered.get("response", f"Goro heard: {user_input}")
+    memory["last_triggered_response"] = response
+    save_memory(memory)
+    return response
