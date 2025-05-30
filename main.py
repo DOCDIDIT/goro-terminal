@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import json, os
 from datetime import datetime
-from goro_command_handler import handle_command
 
 app = Flask(__name__)
 
