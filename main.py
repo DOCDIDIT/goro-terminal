@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify, render_template
-import json, os
-from datetime import datetime
+import os
+from memory_handler import load_memory, save_memory
+from mutation_executor import process_mutation_queue
+from command_cognition import interpret_command
 
 app = Flask(__name__)
 
