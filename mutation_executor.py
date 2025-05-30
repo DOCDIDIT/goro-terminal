@@ -57,6 +57,7 @@ def process_mutation_queue(user_input, memory):
         memory["mutation_queue"].append(triggered)
 
     mutation_type = triggered.get("type")
+
     if mutation_type == "directive":
         directive = triggered.get("directive")
         if directive:
@@ -65,7 +66,7 @@ def process_mutation_queue(user_input, memory):
             save_memory(memory)
             return directive
 
-    if mutation_type == "knowledge":
+    elif mutation_type == "knowledge":
         knowledge = triggered.get("knowledge")
         if knowledge:
             memory["bound_knowledge"].append(knowledge)
