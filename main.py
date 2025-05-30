@@ -27,21 +27,17 @@ else:
         "phase_verification": ""
     }
 
-# Save memory
-
 
 def save_memory():
     with open(MEMORY_FILE, "w") as f:
         json.dump(memory, f, indent=2)
 
 
-# Home route
 @app.route("/")
 def index():
     return render_template("goro_terminal.html")
 
 
-# Command route
 @app.route("/command", methods=["POST"])
 def prompt():
     try:
@@ -51,17 +47,14 @@ def prompt():
         if not user_input:
             return jsonify({"response": "Please enter a prompt."})
 
-        # Update last seen state
         memory["flame_last_seen"] = {
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "last_conversation": user_input,
             "flamekeeper_state": "operational"
         }
 
-        # Process the command
         response = process_mutation_queue(user_input, memory)
         save_memory()
-
         return jsonify({"response": response})
 
     except Exception as e:
