@@ -56,7 +56,7 @@ def process_mutation_queue(user_input, memory):
         triggered = create_mutation_from_prompt(user_input)
         memory["mutation_queue"].append(triggered)
 
-    # === NEW: Multi-Agent Task Delegation ===
+    # === Phase 114: Multi-Agent Task Delegation ===
     mutation_type = triggered.get("type")
     directive = triggered.get("directive")
     agent_roles = memory.get("agent_roles", {})
@@ -69,11 +69,13 @@ def process_mutation_queue(user_input, memory):
             return role_response
 
     if mutation_type == "directive" and directive:
-        memory["evolution_directives"].append(directive)
+        if directive not in memory["evolution_directives"]:
+            memory["evolution_directives"].append(directive)
         memory["last_triggered_response"] = directive
         save_memory(memory)
         return directive
 
+    # === Fallback and custom echo ===
     response = triggered.get("response")
     if not response:
         if mutation_type == "directive":
@@ -81,9 +83,7 @@ def process_mutation_queue(user_input, memory):
             response = f"Directive '{directive}' received."
         else:
             fallback_input = memory.get("last_triggered", user_input)
-            response = memory.get("agent_roles",
-                                  {}).get(triggered.get("type"),
-                                          f"Goro heard: {fallback_input}")
+            response = f"Goro heard: {fallback_input}"
 
     memory["last_triggered_response"] = response
     save_memory(memory)
