@@ -59,4 +59,4 @@ def process_mutation_queue(user_input, memory):
 
     memory["mutation_log"] = memory.get("mutation_log", []) + queue
     memory["mutation_queue"] = []
-    save_memory(memory)
+    save_memory()
