@@ -31,8 +31,7 @@ def prompt():
 
         # Fallback to mutation executor
         response = process_mutation_queue(user_input, memory)
-        return jsonify(
-            {"response": response or "⚠️ No valid response generated."})
+        return jsonify({"response": response or f"Goro heard: {user_input}"})
 
     except Exception as e:
         return jsonify({"response": f"❌ Internal Error: {str(e)}"}), 500
