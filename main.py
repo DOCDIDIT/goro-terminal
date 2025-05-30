@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template, request, jsonify
-from mutation_executor import load_memory, save_memory, process_mutation_queue
+from mutation_executor import load_memory, save_memory
+from goro_command_handler import process_command
 import time
 
 app = Flask(__name__)
@@ -25,7 +26,7 @@ def prompt():
     memory["last_conversation"] = user_input
     memory["flamekeeper_state"] = "stable"
 
-    response = process_mutation_queue(user_input, memory)
+    response = process_command(user_input, memory)
     save_memory(memory)
     return jsonify({"response": response})
 
