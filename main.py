@@ -1,8 +1,12 @@
-from flask import Flask, request, jsonify, render_template
-from mutation_executor import load_memory, save_memory, process_mutation_queue
-from goro_command_handler import process_command
+from flask import Flask, render_template, request, jsonify
+import os
+from mutation_executor import (load_memory, save_memory,
+                               create_mutation_from_prompt,
+                               process_mutation_queue)
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
+
+memory = load_memory()
 
 
 @app.route("/")
@@ -12,20 +16,17 @@ def index():
 
 @app.route("/command", methods=["POST"])
 def prompt():
-    user_input = request.json["user_input"]
-    memory = load_memory()
-
-    # Default to command processing
-    response = process_command(user_input, memory)
-
-    # If mutation handled it, override response
-    mutation_response = process_mutation_queue(user_input, memory)
-    if mutation_response:
-        response = mutation_response
-
+    user_input = request.get_json()["user_input"]
+    response = process_mutation_queue(user_input, memory)
     save_memory(memory)
     return jsonify({"response": response})
 
 
+@app.route("/memory", methods=["GET"])
+def memory_dump():
+    return jsonify(memory)
+
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=10000)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
