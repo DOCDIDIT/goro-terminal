@@ -5,7 +5,16 @@
     "last_conversation": "Phase 88 patch applied",
     "flamekeeper_state": "operational"
   },
-  "mutation_queue": [],
+  "mutation_queue": [
+    {
+      "trigger": "hey",
+      "response": "Hey there, Flamekeeper."
+    },
+    {
+      "trigger": "how are you",
+      "response": "Always improving. How can I serve you today?"
+    }
+  ],
   "evolution_directives": [],
   "bound_knowledge": [],
   "flamechain_history": [],
