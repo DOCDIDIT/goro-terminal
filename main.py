@@ -1,16 +1,14 @@
 from flask import Flask, request, jsonify, render_template
 import os
+import json
+from datetime import datetime
 from memory_handler import load_memory, save_memory
 from mutation_executor import process_mutation_queue
-from command_cognition import interpret_command
-from datetime import datetime
-import json
 
 app = Flask(__name__)
 
 MEMORY_FILE = "memory.json"
 
-# Load memory
 if os.path.exists(MEMORY_FILE):
     with open(MEMORY_FILE, "r") as f:
         memory = json.load(f)
@@ -27,16 +25,9 @@ else:
         "phase_verification": ""
     }
 
-
-def save_memory():
-    with open(MEMORY_FILE, "w") as f:
-        json.dump(memory, f, indent=2)
-
-
 @app.route("/")
 def index():
     return render_template("goro_terminal.html")
-
 
 @app.route("/command", methods=["POST"])
 def prompt():
@@ -54,12 +45,11 @@ def prompt():
         }
 
         response = process_mutation_queue(user_input, memory)
-        save_memory()
+        save_memory(memory)
         return jsonify({"response": response})
 
     except Exception as e:
         return jsonify({"response": f"An error occurred: {str(e)}"})
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

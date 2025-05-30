@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", function () {
   const sendBtn = document.getElementById("send-button");
   const inputBox = document.getElementById("user-input");
@@ -21,17 +20,20 @@ document.addEventListener("DOMContentLoaded", function () {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ user_input: prompt })
     })
-           .then(res => res.json())
-           .then(data => {
-             console.log("🧠 Response from backend:", data);
-             appendMessage("bot", data.response);
+    .then(res => res.json())
+    .then(data => {
+      console.log("🧠 Response from backend:", data);
+      appendMessage("bot", data.response);
     })
     .catch(err => appendMessage("bot", "Internal Error: " + err.message));
     inputBox.value = "";
   }
 
   sendBtn.addEventListener("click", sendPrompt);
-  inputBox.addEventListener("keydown", function (e) {
-    if (e.key === "Enter") sendPrompt();
+  inputBox.addEventListener("keypress", function (e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      sendPrompt();
+    }
   });
 });
