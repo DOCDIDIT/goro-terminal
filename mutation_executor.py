@@ -29,8 +29,11 @@ def save_memory(memory):
 
 
 def create_mutation_from_prompt(prompt):
-    # Basic JSON parser and fallback
+    # 🔥 New: Strip known prefix before attempting JSON parse
     try:
+        if prompt.startswith("inject.mutation"):
+            prompt = prompt.replace("inject.mutation", "", 1).strip()
+
         mutation = json.loads(prompt)
         if "trigger" in mutation and ("response" in mutation or "alias"
                                       in mutation or "directive" in mutation):
@@ -56,7 +59,6 @@ def process_mutation_queue(user_input, memory):
         triggered = create_mutation_from_prompt(user_input)
         memory["mutation_queue"].append(triggered)
 
-    # Handle directive mutations
     mutation_type = triggered.get("type")
     if mutation_type == "directive":
         directive = triggered.get("directive")
