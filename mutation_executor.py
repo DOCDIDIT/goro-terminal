@@ -80,7 +80,7 @@ def process_mutation_queue(user_input, memory):
             directive = triggered.get("directive", "unknown")
             response = f"Directive '{directive}' received."
         else:
-            fallback_input = memory.get("last_triggered", user_input)
+            fallback_input = triggered.get("trigger", "[unknown input]")
             response = f"Goro heard: {fallback_input}"
 
     memory["last_triggered_response"] = response
