@@ -28,8 +28,8 @@ def home():
 
 @app.route("/command", methods=["POST"])
 def prompt():
-    user_input = request.json["prompt"]
-    memory = load_memory()
+    user_input = request.json["user_input"]
+    memory = load_memory(memory)
     response = process_mutation_queue(user_input, memory)
     save_memory(memory)
     return jsonify({"response": response})
@@ -38,7 +38,7 @@ def prompt():
 @app.route("/inject", methods=["POST"])
 def inject():
     data = request.json
-    memory = load_memory()
+    memory = load_memory(memory)
 
     if "mutation" in data:
         mutation = data["mutation"]
