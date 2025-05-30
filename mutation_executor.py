@@ -1,58 +1,54 @@
-import os
 import json
-from memory_handler import load_memory, save_memory
+import os
+from datetime import datetime
 
+MEMORY_PATH = "memory.json"
 
-def process_mutation_queue(user_input=None, memory=None):
-    try:
-        if memory is None:
-            memory = load_memory()
+def load_memory():
+    if not os.path.exists(MEMORY_PATH):
+        return {}
+    with open(MEMORY_PATH, "r") as f:
+        return json.load(f)
 
-        mutation_dir = "mutations"
-        if not os.path.exists(mutation_dir):
-            return
-
-        for filename in os.listdir(mutation_dir):
-            if filename.endswith(".json"):
-                path = os.path.join(mutation_dir, filename)
-                with open(path, "r") as file:
-                    mutation = json.load(file)
-
-                trigger = mutation.get("trigger")
-                mutation_type = mutation.get("type")
-                directive = mutation.get("directive")
-                response = mutation.get("response")
-
-                # DIRECTIVE TYPE HANDLING
-                if mutation_type == "directive" and directive:
-                    if "evolution_directives" not in memory:
-                        memory["evolution_directives"] = []
-                    memory["evolution_directives"].append(directive)
-                    memory["last_triggered_response"] = directive
-
-                # RESPONSE TYPE
-                elif mutation_type == "response" and response:
-                    memory["last_triggered_response"] = response
-
-                # Log and save memory
-                memory["last_triggered"] = trigger
-                if "mutation_log" not in memory:
-                    memory["mutation_log"] = []
-                memory["mutation_log"].append(trigger)
-
-                save_memory(memory)
-                os.remove(path)
-
-    except Exception as e:
-        print(f"[MUTATION_EXECUTOR ERROR] {e}")
-
+def save_memory(memory):
+    with open(MEMORY_PATH, "w") as f:
+        json.dump(memory, f, indent=2)
 
 def create_mutation_from_prompt(user_input, memory):
-    import datetime
-    timestamp = datetime.datetime.utcnow().isoformat() + "Z"
     return {
-        "mutation": f"auto_{timestamp}",
-        "trigger": user_input.strip().split()[0],
-        "type": "response",
-        "response": f"Auto response generated for: {user_input}"
+        "trigger": user_input.strip().lower(),
+        "response": f"Auto response generated for: {user_input.strip()}",
+        "timestamp": datetime.utcnow().isoformat()
     }
+
+def process_mutation_queue():
+    memory = load_memory()
+    queue = memory.get("mutation_queue", [])
+    for mutation in queue:
+        mutation_type = mutation.get("type", "basic")
+
+        if mutation_type == "memory":
+            key = mutation.get("key")
+            value = mutation.get("value")
+            if key and value:
+                memory[key] = value
+                memory["last_triggered_response"] = f"{key} set to {value}"
+
+        elif mutation_type == "command":
+            alias = mutation.get("alias")
+            if alias:
+                memory["last_triggered_response"] = f"Command executed: {alias}"
+
+        elif mutation_type == "directive":
+            directive = mutation.get("directive")
+            if directive:
+                memory["evolution_directives"] = memory.get("evolution_directives", [])
+                memory["evolution_directives"].append(directive)
+                memory["last_triggered_response"] = f"Directive accepted: {directive}"
+
+        else:
+            memory["last_triggered_response"] = f"Unhandled mutation type: {mutation_type}"
+
+    memory["mutation_log"] = memory.get("mutation_log", []) + queue
+    memory["mutation_queue"] = []
+    save_memory(memory)
