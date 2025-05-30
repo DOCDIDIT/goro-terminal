@@ -1,8 +1,8 @@
+
 import json
 import os
 
 MEMORY_FILE = "memory.json"
-
 
 def load_memory():
     if os.path.exists(MEMORY_FILE):
@@ -23,11 +23,9 @@ def load_memory():
         "last_triggered_response": ""
     }
 
-
 def save_memory(memory):
     with open(MEMORY_FILE, "w") as f:
         json.dump(memory, f, indent=2)
-
 
 def create_mutation_from_prompt(prompt):
     try:
@@ -42,7 +40,6 @@ def create_mutation_from_prompt(prompt):
         "response": f"Goro heard: {prompt.strip()}"
     }
 
-
 def process_mutation_queue(user_input, memory):
     memory["last_triggered"] = user_input
     triggered = None
@@ -56,7 +53,7 @@ def process_mutation_queue(user_input, memory):
         triggered = create_mutation_from_prompt(user_input)
         memory["mutation_queue"].append(triggered)
 
-    # === Phase 114: Multi-Agent Task Delegation ===
+    # === Multi-Agent Task Delegation ===
     mutation_type = triggered.get("type")
     directive = triggered.get("directive")
     agent_roles = memory.get("agent_roles", {})
@@ -69,13 +66,11 @@ def process_mutation_queue(user_input, memory):
             return role_response
 
     if mutation_type == "directive" and directive:
-        if directive not in memory["evolution_directives"]:
-            memory["evolution_directives"].append(directive)
+        memory["evolution_directives"].append(directive)
         memory["last_triggered_response"] = directive
         save_memory(memory)
         return directive
 
-    # === Fallback and custom echo ===
     response = triggered.get("response")
     if not response:
         if mutation_type == "directive":
@@ -83,7 +78,18 @@ def process_mutation_queue(user_input, memory):
             response = f"Directive '{directive}' received."
         else:
             fallback_input = memory.get("last_triggered", user_input)
-            response = f"Goro heard: {fallback_input}"
+            response = memory.get("agent_roles", {}).get(triggered.get("type"),
+                        f"Goro heard: {fallback_input}")
+
+    # === PATCH: Format response with memory tokens ===
+    if isinstance(response, str):
+        try:
+            response = response.format(
+                flame_summary=memory.get("flame_summary", ""),
+                flame_last_seen=memory.get("flame_last_seen", {})
+            )
+        except Exception:
+            pass
 
     memory["last_triggered_response"] = response
     save_memory(memory)
