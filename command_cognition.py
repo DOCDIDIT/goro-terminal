@@ -1,81 +1,40 @@
 import json
 import re
-from datetime import datetime
 
-MEMORY_PATH = "memory.json"
 
-def load_memory():
-    try:
-        with open(MEMORY_PATH, "r") as f:
-            return json.load(f)
-    except:
-        return {}
+def interpret_command(user_input, memory):
+    """
+    This function processes the user_input string and checks if it matches
+    any command, mutation trigger, or system directive in memory.json.
 
-def save_memory(memory):
-    with open(MEMORY_PATH, "w") as f:
-        json.dump(memory, f, indent=2)
+    Returns:
+        - 'response': if a trigger matches
+        - 'route': for routed agent
+        - None: if no matches found
+    """
 
-def parse_command(input_text):
-    input_text = input_text.strip()
+    if not user_input or not memory:
+        return None
 
-    goal_match = re.match(r"(set|add)_goal\s*\(\s*[\"'](.+?)[\"']\s*\)", input_text)
-    if goal_match:
-        return {
-            "type": "goal",
-            "description": goal_match.group(2)
-        }
+    user_input = user_input.strip().lower()
 
-    inject_match = re.match(r"1031\.inject\s*\{(.+)\}", input_text)
-    if inject_match:
-        return {
-            "type": "mutation",
-            "raw": inject_match.group(1)
-        }
+    # Check direct mutation triggers
+    for entry in memory.get("mutation_queue", []):
+        if user_input == entry.get("trigger", "").lower():
+            return {
+                "type": "trigger_response",
+                "response": entry.get("response", "")
+            }
 
-    if input_text.startswith("inject.flame_summary"):
-        return {
-            "type": "persona_patch",
-            "command": input_text
-        }
+    # Check fusion being agent routing
+    if memory.get("fusion_agents"):
+        for agent in memory["fusion_agents"]:
+            if agent["name"].lower() in user_input:
+                return {
+                    "type": "route",
+                    "agent": agent["name"],
+                    "context": user_input
+                }
 
-    if "reset" in input_text.lower() and "memory" in input_text.lower():
-        return {
-            "type": "reset",
-            "target": "memory"
-        }
-
-    return {
-        "type": "general_prompt",
-        "content": input_text
-    }
-
-def process_command(input_text):
-    result = parse_command(input_text)
-    print(f"[Command Parser] Type: {result['type']}")
-    if result['type'] == "goal":
-        print(f" -> New Goal: {result['description']}")
-        memory = load_memory()
-        if "goals" not in memory:
-            memory["goals"] = []
-        memory["goals"].append({
-            "description": result['description'],
-            "timestamp": datetime.utcnow().isoformat() + "Z"
-        })
-        save_memory(memory)
-        print(" -> Goal stored in memory.")
-    elif result['type'] == "mutation":
-        print(" -> Detected raw mutation payload. Ready for parsing or queuing.")
-    elif result['type'] == "persona_patch":
-        print(" -> Detected flame_summary update.")
-    elif result['type'] == "reset":
-        print(" -> Memory reset requested (manual confirmation needed).")
-    elif result['type'] == "general_prompt":
-        print(" -> Treated as natural input or task for Goro to interpret.")
-
-if __name__ == "__main__":
-    print("[Command Parser] Awaiting input. Type 'exit' to quit.")
-    while True:
-        user_input = input(">> ")
-        if user_input.lower() == "exit":
-            break
-        process_command(user_input)
+    # Fallback
+    return None

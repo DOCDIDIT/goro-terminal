@@ -2,6 +2,7 @@ import os
 from flask import Flask, render_template, request, jsonify
 from mutation_executor import load_memory, save_memory
 from goro_command_handler import process_command
+from command_cognition import interpret_command
 import time
 
 app = Flask(__name__)
@@ -20,14 +21,22 @@ def index():
 @app.route("/command", methods=["POST"])
 def prompt():
     user_input = request.json.get("prompt", "")
+    memory = load_memory()
 
-    # Save last seen timestamp and conversation history
-    memory["flame_last_seen"]["timestamp"] = time.strftime("%Y-%m-%d %H:%M:%S")
-    memory["last_conversation"] = user_input
-    memory["flamekeeper_state"] = "stable"
+    # Try to interpret the input via cognition engine
+    interpreted = interpret_command(user_input, memory)
 
-    response = process_command(user_input, memory)
-    save_memory(memory)
+    if interpreted:
+        if interpreted["type"] == "trigger_response":
+            return jsonify({"response": interpreted["response"]})
+        if interpreted["type"] == "route":
+            return jsonify({
+                "response":
+                f"Routing to {interpreted['agent']} for: {interpreted['context']}"
+            })
+
+    # Fallback to mutation executor
+    response = process_mutation_queue(user_input, memory)
     return jsonify({"response": response})
 
 
