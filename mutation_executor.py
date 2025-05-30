@@ -1,11 +1,9 @@
-import os
 import json
-import time
+import os
 
 MEMORY_FILE = "memory.json"
 
 
-# === Memory Load/Save ===
 def load_memory():
     if os.path.exists(MEMORY_FILE):
         with open(MEMORY_FILE, "r") as f:
@@ -22,10 +20,7 @@ def load_memory():
         "phase_verification": "",
         "mutation_log": [],
         "last_triggered": "",
-        "last_triggered_response": "",
-        "last_conversation": [],
-        "agent_roles": {},
-        "task_routing": {}
+        "last_triggered_response": ""
     }
 
 
@@ -34,7 +29,6 @@ def save_memory(memory):
         json.dump(memory, f, indent=2)
 
 
-# === Mutation Builder ===
 def create_mutation_from_prompt(prompt):
     try:
         mutation = json.loads(prompt)
@@ -49,7 +43,6 @@ def create_mutation_from_prompt(prompt):
     }
 
 
-# === Core Mutation Processor ===
 def process_mutation_queue(user_input, memory):
     memory["last_triggered"] = user_input
     triggered = None
@@ -75,12 +68,21 @@ def process_mutation_queue(user_input, memory):
             save_memory(memory)
             return role_response
 
+    if mutation_type == "directive" and directive:
+        memory["evolution_directives"].append(directive)
+        memory["last_triggered_response"] = directive
+        save_memory(memory)
+        return directive
+
     response = triggered.get("response")
     if not response:
         if mutation_type == "directive":
-            response = f"Directive '{triggered.get('directive', 'unknown')}' received."
+            directive = triggered.get("directive", "unknown")
+            response = f"Directive '{directive}' received."
         else:
-            response = f"Goro heard: {user_input}"
+            fallback_input = memory.get("last_triggered", user_input)
+            response = f"Goro heard: {fallback_input}"
+
     memory["last_triggered_response"] = response
     save_memory(memory)
     return response
