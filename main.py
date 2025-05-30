@@ -3,6 +3,7 @@ import os
 from memory_handler import load_memory, save_memory
 from mutation_executor import process_mutation_queue
 from command_cognition import interpret_command
+import json
 
 app = Flask(__name__)
 
