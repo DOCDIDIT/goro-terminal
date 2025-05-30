@@ -87,3 +87,7 @@ def process_mutation_queue(user_input, memory):
             response = f"Directive '{triggered.get('directive', 'unknown')}' received."
         else:
             response = f"Goro heard: {user_input}"
+
+        memory["last_triggered_response"] = response
+        save_memory(memory)
+        return response
