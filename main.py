@@ -1,16 +1,10 @@
+from flask import Flask, request, jsonify, render_template
 import os
-from flask import Flask, render_template, request, jsonify
-from mutation_executor import process_mutation_queue, load_memory, save_memory
-from goro_command_handler import process_command
+from memory_handler import load_memory, save_memory
+from mutation_executor import process_mutation_queue
 from command_cognition import interpret_command
-import time
 
 app = Flask(__name__)
-
-memory = load_memory()
-memory.setdefault("flamekeeper_state", "stable")
-memory.setdefault("flame_last_seen", {})
-memory.setdefault("last_conversation", "")
 
 
 @app.route("/")
@@ -20,24 +14,28 @@ def index():
 
 @app.route("/command", methods=["POST"])
 def prompt():
-    user_input = request.json.get("prompt", "")
-    memory = load_memory()
+    try:
+        user_input = request.json.get("prompt", "")
+        memory = load_memory()
 
-    # Try to interpret the input via cognition engine
-    interpreted = interpret_command(user_input, memory)
+        interpreted = interpret_command(user_input, memory)
 
-    if interpreted:
-        if interpreted["type"] == "trigger_response":
-            return jsonify({"response": interpreted["response"]})
-        if interpreted["type"] == "route":
-            return jsonify({
-                "response":
-                f"Routing to {interpreted['agent']} for: {interpreted['context']}"
-            })
+        if interpreted:
+            if interpreted["type"] == "trigger_response":
+                return jsonify({"response": interpreted["response"]})
+            if interpreted["type"] == "route":
+                return jsonify({
+                    "response":
+                    f"Routing to {interpreted['agent']} for: {interpreted['context']}"
+                })
 
-    # Fallback to mutation executor
-    response = process_mutation_queue(user_input, memory)
-    return jsonify({"response": response})
+        # Fallback to mutation executor
+        response = process_mutation_queue(user_input, memory)
+        return jsonify(
+            {"response": response or "⚠️ No valid response generated."})
+
+    except Exception as e:
+        return jsonify({"response": f"❌ Internal Error: {str(e)}"}), 500
 
 
 if __name__ == "__main__":
