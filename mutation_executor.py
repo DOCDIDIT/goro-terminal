@@ -29,17 +29,21 @@ def save_memory(memory):
 
 
 def create_mutation_from_prompt(prompt):
-    prompt = prompt.strip()
+    # 🔥 New: Strip known prefix before attempting JSON parse
     try:
-        mutation = json.loads(prompt)
-        if ("trigger" in mutation
-                and ("response" in mutation or "alias" in mutation
-                     or "directive" in mutation)):
-            return mutation
-    except json.JSONDecodeError:
-        pass
+        if prompt.startswith("inject.mutation"):
+            prompt = prompt.replace("inject.mutation", "", 1).strip()
 
-    return {"trigger": prompt, "response": f"Goro heard: {prompt}"}
+        mutation = json.loads(prompt)
+        if "trigger" in mutation and ("response" in mutation or "alias"
+                                      in mutation or "directive" in mutation):
+            return mutation
+    except Exception:
+        pass
+    return {
+        "trigger": prompt.strip(),
+        "response": f"Goro heard: {prompt.strip()}"
+    }
 
 
 def process_mutation_queue(user_input, memory):
