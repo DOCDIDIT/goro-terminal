@@ -17,6 +17,10 @@
     {
       "trigger": "hows it going",
       "response": "Smooth as firelight. What's next?"
+    },
+    {
+      "trigger": "show.memories",
+      "response": "Memory summary:\n- Flame Summary: {flame_summary}\n- Recent Seen: {flame_last_seen['last_conversation']}"
     }
   ],
   "evolution_directives": [],
