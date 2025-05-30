@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify, render_template
 import os
-import json
-from datetime import datetime
 from memory_handler import load_memory, save_memory
 from mutation_executor import process_mutation_queue
+from command_cognition import interpret_command
+from datetime import datetime
+import json
 
 app = Flask(__name__)
 
@@ -25,6 +26,10 @@ else:
         "phase_verification": ""
     }
 
+def save_memory():
+    with open(MEMORY_FILE, "w") as f:
+        json.dump(memory, f, indent=2)
+
 @app.route("/")
 def index():
     return render_template("goro_terminal.html")
@@ -34,20 +39,16 @@ def prompt():
     try:
         data = request.get_json()
         user_input = data.get("user_input", "").strip()
-
         if not user_input:
             return jsonify({"response": "Please enter a prompt."})
-
         memory["flame_last_seen"] = {
             "timestamp": datetime.utcnow().isoformat() + "Z",
             "last_conversation": user_input,
             "flamekeeper_state": "operational"
         }
-
         response = process_mutation_queue(user_input, memory)
-        save_memory(memory)
+        save_memory()
         return jsonify({"response": response})
-
     except Exception as e:
         return jsonify({"response": f"An error occurred: {str(e)}"})
 

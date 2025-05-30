@@ -31,9 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   sendBtn.addEventListener("click", sendPrompt);
   inputBox.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      sendPrompt();
-    }
+    if (e.key === "Enter") sendPrompt();
   });
 });
