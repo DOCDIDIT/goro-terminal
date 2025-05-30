@@ -34,15 +34,15 @@ def create_mutation_from_prompt(prompt):
         if prompt.startswith("inject.mutation"):
             prompt = prompt.replace("inject.mutation", "", 1).strip()
 
-        mutation = json.loads(prompt)
+        mutation = json.loads(user_input)
         if "trigger" in mutation and ("response" in mutation or "alias"
                                       in mutation or "directive" in mutation):
             return mutation
     except Exception:
         pass
     return {
-        "trigger": prompt.strip(),
-        "response": f"Goro heard: {prompt.strip()}"
+        "trigger": user_input.strip(),
+        "response": f"Goro heard: {user_input.strip()}"
     }
 
 
