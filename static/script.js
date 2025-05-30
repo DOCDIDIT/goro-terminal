@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("/command", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_input: prompt })
+      body: JSON.stringify({ prompt: prompt })
     })
            .then(res => res.json())
            .then(data => {
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   sendBtn.addEventListener("click", sendPrompt);
-  inputBox.addEventListener("keypress", function (e) {
+  inputBox.addEventListener("keydown", function (e) {
     if (e.key === "Enter") sendPrompt();
   });
 });
