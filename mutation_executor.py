@@ -42,7 +42,7 @@ def create_mutation_from_prompt(prompt):
         pass
     return {
         "trigger": prompt.strip(),
-        "response": f"Goro heard: {user_input.strip()}"
+        "response": f"Goro heard: {prompt.strip()}"
     }
 
 
