@@ -41,7 +41,7 @@ def create_mutation_from_prompt(prompt):
     except Exception:
         pass
     return {
-        "trigger": user_input.strip(),
+        "trigger": prompt.strip(),
         "response": f"Goro heard: {user_input.strip()}"
     }
 
