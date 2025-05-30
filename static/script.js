@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("/command", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: prompt })
+      body: JSON.stringify({ user_input: prompt })
     })
            .then(res => res.json())
            .then(data => {
